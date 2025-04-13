@@ -1,0 +1,9 @@
+file_path	data_description
+student_data.csv	BCM student data (2005-2010)
+tracts.xlsx     school-to-census-tract mappings
+dmsp.csv    artificial light at night data (by census tract)
+coi_data_cleaned.csv    COI data (cleaned)
+trajgps.csv student trajectory group data
+growth.csv cleaned student data outputted by clean_student_data_first.RMD
+student_data_cleaned.csv cleaned student data with additional columns exported by demo.ipynb
+melt_final.csv melted data outputted by mixed_effects_data_cleaning_example_.ipynb
