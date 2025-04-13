@@ -123,7 +123,7 @@ Prior to running the demo notebook, this Github repo must be cloned to ensure th
 
 2. Copy the repostory URL. In this example, the HTTPS URL is used.
 
-<img width="301" alt="Screenshot 2023-10-17 183121" src="https://github.com/RiceD2KLab/BCM_GrowthTrajectories_F23/assets/90566440/502cb9f6-f8c4-4840-a822-edcb34c904af">
+<img width="301" alt="readme_instructions2" src="https://github.com/hezp-will/BCM_GrowthTrajectories/blob/main/images/readme_instructions2.png">
 
 3. Open Git Bash. If not downloaded, use [this link](https://git-scm.com/downloads) to download Git and Git Bash.
 
@@ -136,21 +136,21 @@ git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY
 
 Once the repository has been cloned into a source-code editor (e.g., VS Code, Google Colab), select the **demo.ipynb** file, as shown below in VS Code:
 
-<img width="386" alt="Screenshot 2023-10-18 222850" src="https://github.com/RiceD2KLab/BCM_GrowthTrajectories_F23/assets/90566440/3ba5a946-5d9d-41b6-b0c8-7b5c20cdd108">
+<img width="386" alt="readme_instructions3" src="https://github.com/hezp-will/BCM_GrowthTrajectories/blob/main/images/readme_instructions3.png">
 
 The next steps are to be followed in the **demo.ipynb** file.
 
 Open the Command Palette using (Ctrl + Shift + P) to select the appropriate Python interpreter by entering the command in the image below:
 
-<img width="176" alt="Screenshot 2023-10-20 185723" src="https://github.com/RiceD2KLab/BCM_GrowthTrajectories_F23/assets/90566440/a527b1dd-cd15-48d2-a2ee-bef5bdf8398a">
+<img width="176" alt="readme_instructions4" src="https://github.com/hezp-will/BCM_GrowthTrajectories/blob/main/images/readme_instructions4.png">
 
 Select the conda-supported interpreter:
 
-<img width="529" alt="Screenshot 2023-10-20 185952" src="https://github.com/RiceD2KLab/BCM_GrowthTrajectories_F23/assets/90566440/9f838323-398d-4482-b87a-0515d41668a8">
+<img width="529" alt="readme_instructions5" src="https://github.com/hezp-will/BCM_GrowthTrajectories/blob/main/images/readme_instructions5.png">
 
 The **environment.yml** file, which contains the appropriate Python libraries and versions, should be in the repository. Open a New Terminal:
 
-<img width="438" alt="Screenshot 2023-10-20 190142" src="https://github.com/RiceD2KLab/BCM_GrowthTrajectories_F23/assets/90566440/10da4153-0d8c-4a2b-aaa3-408611821525">
+<img width="438" alt="readme_instructions6" src="https://github.com/hezp-will/BCM_GrowthTrajectories/blob/main/images/readme_instructions6.png">
 
 Enter the following command in the terminal:
 ```html
