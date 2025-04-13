@@ -1,0 +1,250 @@
+---
+title: 'BCM Growth Trajectories: Mixed Effects Modeling Demo'
+author: "D2K BCM Growth Trajectories Team"
+date: "2023-11-07"
+output: pdf_document
+---
+
+## This file contains the demo for constructing, running, checking,
+## validating, and plotting the linear mixed-effects models predicting children's
+## BMI based on child opportunity index (COI), artificial light at night (ALAN),
+## and other child- and school-level characteristics.
+
+## Necessary data files: student_melt_new (output from 'mixed_effects_cleaning_data.py'),
+##  student_data_cleaned (output from 'clean_student_data_second.py'),
+##  coi_data_cleaned (retrieve from data source)
+
+## Necessary R version: >= R-4.1.3
+
+## _____________________________________________________________________________
+
+## ENVIRONMENT AND DATA SETUP
+
+```{r}
+# clear global environment
+rm(list = ls())
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Import necessary packages and libraries.
+```{r}
+## run the following lines to install necessary packages
+devtools::install_version("jtools", "2.2.0")
+devtools::install_version("optimx", "2023-10.21")
+devtools::install_version("lme4", "1.1-32")
+devtools::install_version("merTools", "0.6.1")
+devtools::install_version("coxed", "0.3.3")
+devtools::install_version("kableExtra", "1.3.4")
+devtools::install_version("performance", "0.10.8")
+devtools::install_version("ggh4x", "0.2.6")
+devtools::install_version("tidyverse", "1.3.2")
+remotes::install_version("Rttf2pt1", version = "1.3.8")
+
+# run the following lines to load packages
+library(jtools)
+library(optimx)
+library(lme4)
+library(merTools)
+library(coxed)
+library(kableExtra)
+library(performance)
+library(ggh4x)
+library(tidyverse)
+```
+
+Import the data.
+```{r}
+student_data = read.csv("~/BCM_GrowthTrajectories_F23/data_directory/melt_final.csv")
+## or choose file interactively with the following command
+#student_melted = read.csv(file.choose())
+
+student_full = read.csv("~/BCM_GrowthTrajectories_F23/data_directory/student_data_cleaned.csv")
+## or choose file interactively with the following command
+#student_full = read.csv(file.choose())
+
+# COI data (for adding in original COI categories)
+coi_data = read.csv("~/BCM_GrowthTrajectories_F23/data_directory/coi_data_cleaned.csv")
+## or choose file interactively with the following command
+#coi_data = read.csv(file.choose())
+```
+
+Import mixed-effects modeling functions from .R file
+```{r}
+source("mixed_effects_modeling.R")
+```
+
+________________________________________________________________________________
+
+## CLEAN DATA
+
+```{r}
+# Include COI categories from coi_data into student_data
+student_melted$COI_cat <- coi_data$c5_COI_nat[match(student_data$ctract, coi_data$census_tract)]
+```
+
+```{r}
+# Apply data cleaning functions
+student_melted_cleaned <- clean_training_data(student_melted, student_full)
+lm_plot <- plot_samples(student_melted_cleaned)
+#print(lm_plot)
+```
+
+________________________________________________________________________________
+
+## FIT MODELS
+
+```{r}
+#fit models
+coi_model <- fit_coi_model(student_melted_cleaned)
+dmsp_model <- fit_dmsp_model(student_melted_cleaned)
+
+print(model_summary(coi_model))
+print(model_summary(dmsp_model))
+```
+
+________________________________________________________________________________
+
+## ASSUMPTIONS CHECKING
+
+```{r}
+#check model assumptions
+print(check_assumptions(coi_model))
+```
+
+________________________________________________________________________________
+
+## BOOTSTRAP FOR MODEL ESTIMATES AND CONFIDENCE INTERVALS
+
+Note: depending on number of simulations, each bootstrap may take multiple hours to run.
+```{r}
+#run bootstrap
+coi_bootstrapping <- model_bootstrapping(coi_model, "COI", num_simulations = 500)
+alan_bootstrapping <- model_bootstrapping(dmsp_model, "ALAN", num_simulations = 500)
+
+#create dataframes of results
+coi_coeff_df <- create_coeff_df(coi_bootstrapping, coi_model, "COI")
+dmsp_coeff_df <- create_coeff_df(alan_bootstrapping, dmsp_model, "ALAN")
+
+#plot results
+coi_dw_plot <- create_dw_plot(coi_coeff_df, "COI")
+alan_dw_plot <- create_dw_plot(dmsp_coeff_df, "ALAN")
+
+#print resulting plots
+print(coi_dw_plot)
+print(alan_dw_plot)
+```
+
+________________________________________________________________________________
+
+## PREDICTIONS FOR VISUALIATION
+
+```{r}
+#get predictor dataframe for hypothetical "mean/mode student"
+coi_preds_df <- get_predictions_df(student_melted, "COI")
+dmsp_preds_df <- get_predictions_df(student_melted, "ALAN")
+
+#get point estimate predictions and prediction intervals for student
+coi_point_preds <- get_point_predictions(coi_model, coi_preds_df)
+dmsp_point_preds <- get_point_predictions(dmsp_model, dmsp_preds_df)
+
+#display the predicted trajectories and prediction intervals for student
+display_bmi_preds(coi_preds_df, coi_point_preds, "COI")
+display_bmi_preds(dmsp_preds_df, dmsp_point_preds, "ALAN")
+```
+
+________________________________________________________________________________
+
+# VALIDATION TESTING
+
+Note: block cross-validation (in total) may take multiple hours to run.
+```{r}
+#run block cross-validation for model versions (including "full" model with all
+#potential predictors, a model with no age^2 term, a model with no random slopes
+#for age, and a model with neither an age^2 term nor random slopes for age.)
+coi_full_valid <- apply_blockCV(input_data = student_data, 
+                                input_model = bmi_model_coi_full)
+
+coi_noage2_valid <- apply_blockCV(input_data = student_data, 
+                                  input_model = bmi_model_coi_noage2)
+
+coi_noageslopes_valid <- apply_blockCV(input_data = student_data, 
+                                       input_model = bmi_model_coi_noageslopes)
+
+coi_noage2_noageslopes_valid <- apply_blockCV(input_data = student_data, 
+                                 input_model = bmi_model_coi_noage2_noageslopes)
+
+alan_full_valid <- apply_blockCV(input_data = student_data, 
+                                 input_model = bmi_model_alan_full)
+
+alan_noage2_valid <- apply_blockCV(input_data = student_data, 
+                                   input_model = bmi_model_alan_noage2)
+
+alan_noageslopes_valid <- apply_blockCV(input_data = student_data, 
+                                        input_model = bmi_model_alan_noageslopes)
+
+alan_noage2_noageslopes_valid <- apply_blockCV(input_data = student_data, 
+                                input_model = bmi_model_alan_noage2_noageslopes)
+
+# collect validation results for ALAN models  
+alan_valid <- data.frame(full_rmse = alan_full_valid[1,],
+                         full_mae = alan_full_valid[2,],
+                         noage2_rmse = alan_noage2_valid[1,],
+                         noage2_mae = alan_noage2_valid[2,],
+                         noageslopes_rmse = alan_noageslopes_valid[1,],
+                         noageslopes_mae = alan_noageslopes_valid[2,],
+                         noage2_noageslopes_rmse = alan_noage2_noageslopes_valid[1,],
+                         noage2_noageslopes_mae = alan_noage2_noageslopes_valid[2,])
+
+#collect validation results for COI models
+coi_valid <- data.frame(full_rmse = coi_full_valid[1,],
+                        full_mae = coi_full_valid[2,],
+                        noage2_rmse = coi_noage2_valid[1,],
+                        noage2_mae = coi_noage2_valid[2,],
+                        noageslopes_rmse = coi_noageslopes_valid[1,],
+                        noageslopes_mae = coi_noageslopes_valid[2,],
+                        noage2_noageslopes_rmse = coi_noage2_noageslopes_valid[1,],
+                        noage2_noageslopes_mae = coi_noage2_noageslopes_valid[2,])
+
+#calculate averages across cross-validation iterations
+round(coi_valid %>% apply(MARGIN = 2, FUN = mean),4)
+round(alan_valid %>% apply(MARGIN = 2, FUN = mean),4)
+```
+
+Calculate AIC and BIC for COI and ALAN models.
+```{r}
+AIC_COI <-
+  c(
+    AIC(bmi_model_coi_full(student_data)),
+    AIC(bmi_model_coi_noage2(student_data)),
+    AIC(bmi_model_coi_noageslopes(student_data)),
+    AIC(bmi_model_coi_noage2_noageslopes(student_data)))
+
+BIC_COI <- 
+  c(
+    BIC(bmi_model_coi_full(student_data)),
+    BIC(bmi_model_coi_noage2(student_data)),
+    BIC(bmi_model_coi_noageslopes(student_data)),
+    BIC(bmi_model_coi_noage2_noageslopes(student_data)))
+
+AIC_ALAN <-
+  c(
+    AIC(bmi_model_alan_full(student_data)),
+    AIC(bmi_model_alan_noage2(student_data)),
+    AIC(bmi_model_alan_noageslopes(student_data)),
+    AIC(bmi_model_alan_noage2_noageslopes(student_data)))
+
+BIC_ALAN <-
+  c(
+    BIC(bmi_model_alan_full(student_data)),
+    BIC(bmi_model_alan_noage2(student_data)),
+    BIC(bmi_model_alan_noageslopes(student_data)),
+    BIC(bmi_model_alan_noage2_noageslopes(student_data)))
+
+#collect AIC and BIC results
+AIC_BIC <- data.frame(AIC_ALAN, AIC_COI, BIC_ALAN, BIC_COI)
+```
+
+
