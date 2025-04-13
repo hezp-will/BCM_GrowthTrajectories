@@ -1,0 +1,1 @@
+This file contains two images provided to us by the Baylor College of Medicine. height_gbtm shows the average height increase by trajectory group over time. probow shows the probability of being overweight/obese depending on trajectory group over time.
