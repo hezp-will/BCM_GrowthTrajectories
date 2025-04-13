@@ -119,7 +119,7 @@ Prior to running the demo notebook, this Github repo must be cloned to ensure th
 ### Github Repo Cloning
 1. On the main page of the repository, click **<>Code**
    
-<img width="115" alt="Screenshot 2023-10-17 182941" src="https://github.com/RiceD2KLab/BCM_GrowthTrajectories_F23/assets/90566440/ac844745-8a5a-4670-9b38-1a53d81a021d">
+<img width="115" alt="readme_instructions1" src="https://github.com/hezp-will/BCM_GrowthTrajectories/blob/main/images/readme_instructions1.png">
 
 2. Copy the repostory URL. In this example, the HTTPS URL is used.
 
