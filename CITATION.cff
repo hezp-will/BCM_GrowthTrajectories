@@ -1,0 +1,45 @@
+cff-version: 1.2.0
+title: BCM Growth Trajectories Software
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Gail
+    family-names: Oudekerk
+    affiliation: Rice University
+    email: aro3@rice.edu
+  - given-names: Elijah
+    family-names: Sales
+    email: ess5@rice.edu
+    affiliation: Rice University
+  - given-names: Caleb
+    family-names: Huang
+    email: cdh7@rice.edu
+    affiliation: Rice University
+  - given-names: 'William '
+    family-names: Pan
+    email: zp15@rice.edu
+    affiliation: Rice University
+  - given-names: Zachre
+    family-names: Andrews
+    email: zaa3@rice.edu
+    affiliation: Rice University
+  - given-names: Jacob
+    family-names: Coyle
+    email: jlc24@rice.edu
+    affiliation: Rice University
+  - name: Rice Data to Knowledge (D2K) Lab
+    address: 6100 Main St.
+    city: Houston
+    tel: 713-348-2863
+    email: d2k@rice.edu
+    website: 'https://d2k.rice.edu/'
+abstract: >-
+  The module is a codebase for a Rice D2K (Data to
+  Knowledge) Lab capstone project, in partnership with the
+  Baylor College of Medicine. The project investigates the
+  impact of neighborhood-level factors, namely the Child
+  Opportunity Index (COI) and exposure to artificial light
+  at night (ALAN), on children's growth trajectories and
+  probability of becoming overweight or obese.
